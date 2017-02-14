@@ -1,0 +1,157 @@
+{% extends 'Sistema/main.html' %}
+{% block head %}
+{% load staticfiles %}
+<script src="{% static "admin/plugins/autoNumeric/autoNumeric.js"%}"></script>
+<script src="{% static "admin/plugins/datepicker/bootstrap-datepicker.js"%}"></script>
+{% endblock %}
+{% block contenido %}
+<style type="text/css" media="screen">
+select { width: 100px; margin-right: 20px; }
+    .required {
+        color: red;
+    }
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+    }
+    label {
+        margin-left: 5%;
+    }
+    .input-group {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+</style>
+
+<div  style="text-align: center;" class="box-body no-padding">
+    <h2>Registro de Comida</h2>
+    {% if error == 'vacio' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Complete los datos requeridos antes de guardar.
+    </div>
+    {%endif%}
+
+    <div align="center" class="col-md-6 col-centered">
+        <div class="box box-solid">
+    
+    <form action="" method="post" style="text-align:left;" id="crear_comida_form">{% csrf_token %}
+
+        <label>Fecha:</label>
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </div>
+          <input type="text" class="form-control pull-right" id="fecha_menu" name="fecha">
+        </div><!-- /.input group -->
+        <div class="input_comidas_wrap">              
+        <label for="add_button">Platos:</label>
+        
+        
+        <div class="input-group">
+            <select class="form-control" id="first_select_comidas" name="lista_comida[]">
+                {% for id, nombre in comidas %}
+                    <option value={{id}}>{{nombre}}</option>
+                {% endfor%}
+            </select>
+            <div class="input-group-addon">
+                <a href="#" class="add_comidas_button pull-right"><i class="fa fa-plus"></i></a>
+            </div>
+            </div>
+        </div>
+        
+        <br>
+        <div class="input_postres_wrap">              
+        <label for="add_button">Postres:</label>
+            <div class="input-group">
+                <select class="form-control" id="first_select_postres" name="lista_postre[]">
+                {% for id, nombre in postres %}
+                    <option value={{id}}>{{nombre}}</option>
+                {% endfor%}
+            </select>
+                <div class="input-group-addon">
+                    <a href="#" class="add_postres_button pull-right"><i class="fa fa-plus"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            </div>
+            </div>    
+
+
+
+
+<div align="center">
+    <!-- Aqui va la condicional el if de los permisos para guardar--><input type="submit" class="btn btn-primary"  name="Guardar" value="Guardar">
+    <input type="reset" class="btn btn-info" value="Reestablecer Datos">
+    <a href="/listar_comidas/" class="btn btn-info" name="Cancelar" value="Cancelar">Cancelar</a>
+</div>
+
+</form>
+<script>
+    $("#crear_comida_form").validate({
+        rules: {
+            nombre: "required",
+            calorias: "required",
+            precio: "required",
+        }
+    });
+</script>
+<!--<script>
+    $(document).ready(function () {
+  	jQuery(function($) {
+      	$('#precio').autoNumeric('init');    
+  	});
+});  
+</script>-->
+<script>
+    $(function(){
+        $('#fecha_menu').datepicker({format: 'dd/mm/yyyy'});
+    });
+</script>
+<script>
+    $(document).ready(function() {
+    var max_fields      = 10; //maximum input boxes allowed
+    var wrapper         = $(".input_comidas_wrap"); //Fields wrapper
+    var add_button      = $(".add_comidas_button"); //Add button ID
+    
+    var x = 1; //initlal text box count
+    $(add_button).click(function(e){ //on add input button click
+        e.preventDefault();
+        if(x < max_fields){ //max input box allowed
+            x++; //text box increment
+            $(wrapper).append('<div class="input-group"><select class="form-control" id="" name="lista_comida[]">{% for id, nombre in comidas %} <option value={{id}}>{{nombre}}</option>{% endfor%}</select><div class="input-group-addon"><a class="remove_field" href="#"><i class="fa fa-trash"></i></a></div></div>'); //add select
+        }
+    });
+    
+    $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+        e.preventDefault(); $(this).parent('div').parent('div').remove(); x--;
+    })
+});
+</script>
+<script>
+    $(document).ready(function() {
+    var max_fields      = 10; //maximum input boxes allowed
+    var wrapper         = $(".input_postres_wrap"); //Fields wrapper
+    var add_button      = $(".add_postres_button"); //Add button ID
+    
+    var x = 1; //initlal text box count
+    $(add_button).click(function(e){ //on add input button click
+        e.preventDefault();
+        if(x < max_fields){ //max input box allowed
+            x++; //text box increment
+            $(wrapper).append('<div class="input-group"><select class="form-control" id="" name="lista_postre[]">{% for id, nombre in postres %} <option value={{id}}>{{nombre}}</option>{% endfor%}</select><div class="input-group-addon"><a class="remove_field" href="#"><i class="fa fa-trash"></i></a></div></div>'); //add select
+        }
+    });
+    
+    $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+        e.preventDefault(); $(this).parent('div').parent('div').remove(); x--;
+    })
+});
+</script>
+{% endblock %}

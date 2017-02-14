@@ -1,0 +1,99 @@
+{% extends 'Sistema/main.html' %}
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+    .same-line {
+        float: left;
+    }
+    dd, dt {
+        font-size: 18px;
+    }
+</style>
+<div  align="center" style="margin-top: 30px;" class="box-body no-padding">
+    <div class="col-md-7 col-centered">
+    <div class="box box-primary">
+    <div class="box-header with-border" style="text-align: center;">
+        <h2 style="margin: 0;"><strong>Consultar usuario</strong></h2>
+    </div>
+        <div class="box-body">
+          <dl class="dl-horizontal">
+            <dt>Usuario</dt>
+            <dd>{{usuario.username}}</dd>
+            <br>
+            <dt>Nombre</dt>
+            <dd>{{usuario.first_name}}</dd>
+            <br>
+            <dt>Apellido</dt>
+            <dd>{{usuario.last_name}}</dd>
+            <br>
+            <dt>RUC/CI</dt>
+            <dd>{{usuario.ruc_ci}}</dd>
+            <br>
+            <dt>Telefono</dt>
+            <dd>{{usuario.telefono}}</dd>
+            <br>
+            {% if usuario.telefono_2 %}
+            <dt>Celular</dt>
+            <dd>{{usuario.telefono_2}}</dd>
+            <br>
+            {% endif %}
+            <dt>Direccion</dt>
+            <dd>{{usuario.direccion}}</dd>
+            <br>
+            {% if usuario.correo %}
+            <dt>Email</dt>
+            <dd>{{usuario.correo}}</dd>
+            <br>
+            {% endif %}
+            <dt>Rol Asignado</dt>
+            <dd>{{roles}}</dd>
+            <br>
+            <dt>Usuario Activo</dt>
+            <dd><input id="activo" type="checkbox" name="activo" checked="value" value="{{usuario.is_active}}"  readonly disabled></dd>
+          </dl>
+        </div><!-- /.box-body -->
+        {% if 1 == 3 %}
+        <div align="center" ><br><br>
+            <label>Usuario</label>
+            <label><input id="username" type="text" name="username"  value="{{usuario.username}}" readonly></label><br><br>
+            <label>Nombre</label>
+            <label><input id="firstname" type="text" name="firstname"  value="{{usuario.first_name}}" readonly></label><br><br>
+            <label>Apellido</label>
+            <label><input id="lastname" type="text" name="lastname"  value="{{usuario.last_name}}" readonly></label><br><br>
+            <label>Correo</label>
+            <label><input id="correo" type="email" name="email"  value="{{usuario.correo}}" readonly></label><br><br>
+            <label>Telefono</label>
+            <label><input id="telefono" type="number" name="telefono"  value="{{usuario.telefono}}" readonly></label><br><br>
+            {% if usuario.telefono_2 %}
+                <label>Telefono</label>
+                <label><input id="telefono" type="number" name="telefono"  value="{{usuario.telefono}}" readonly></label><br><br>
+            {% endif %}
+             <label>Domicilio</label>
+            <label><input id="domicilio" type="text" name="direccion"  value="{{usuario.direccion}}" readonly></label><br><br>
+            <!-- <label>Observacion</label>
+            <label><input id="observacion" type="text" name="observacion"  value="{{usuario.observacion}}" readonly></label><br><br>
+
+            <label>Password</label>
+            <label><input id="password" type="password" name="password" value="{{usuario.password}}" readonly></label><br><br>-->
+            <label>Rol Asignado</label>
+            <label><input id="roles" type="text" name="roles"  value="{{roles}}" readonly></label><br><br>
+             <label>Usuario activo</label>
+            <label><input id="activo" type="checkbox" name="activo" checked="value" value="{{usuario.is_active}}"  readonly disabled></label><br><br>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+            <form action="" method="post"  style="text-align:left; ">{% csrf_token %}
+        <div align="center">
+            <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Retroceder">
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'Sistema/main.html' %}
+{% load staticfiles%}
+<link rel="stylesheet" href="{% static "admin/plugins/datatables/dataTables.bootstrap.css"%}">
+{% block header %}
+<h2 align="center">Consultar Zona</h2>
+{% endblock %}
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+    .same-line {
+        float: left;
+    }
+    dd, dt {
+        font-size: 20px;
+    }
+</style>
+<div align="center">
+    <div class="col-md-6 col-centered">
+      <div class="box box-primary">
+        <div class="box-header with-border" style="text-align: center;">
+            <h2 class="box-title"><strong><span style="color: #3c8dbc;">Informaci&oacute;n</span></strong></h2>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <dl class="dl-horizontal">
+            <dt>Nombre</dt>
+            <dd>{{zona.nombre}}</dd>
+            <br>
+            <dt>Encargado</dt>
+            <dd>{{zona.encargado.first_name}} {{zona.encargado.last_name}}</dd>
+              <br>
+          </dl>
+        </div><!-- /.box-body -->
+      </div><!-- /.box -->
+    </div>
+</div>
+<form action="" method="post">{% csrf_token %}
+    <div align="center">
+            <input type="submit" class="btn btn-info" name="Retroceder" value="Retroceder">
+    </div>
+</form>
+{% endblock %}

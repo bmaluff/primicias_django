@@ -1,0 +1,111 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+    <h2 class="box-tittle" align="center">Listar postres</h2>
+{% endblock %}
+
+
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+</style>
+
+<div  style="text-align: center;" class="panel-body box-body">
+    <div>
+        <form method='post'>{% csrf_token %}
+            <div class="col-md-3 col-centered">
+                <div class="input-group">    
+                {% load widget_tweaks %}
+                {% render_field form.Busqueda class+="form-control" %}
+                    <span class="input-group-btn">
+                        <button type='submit' name="search" class="btn btn-flat">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    {% if error %}
+        <div class="alert alert-danger alert-dismissible " role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Error!</strong> Seleccione un usuario!
+        </div>
+    {% endif %}
+    {% if postres != 'NULL' %}
+    <div class="col-md-10 col-centered">
+        <div class="box box-solid">
+        <div class="box-body" style="text-align: center;">
+            <!--<div class="table-responsive">-->
+                <table class="table table-striped table-responsive" style="margin-bottom:90px;">
+                    <thead>
+                    <tr class="text-info">
+                        <th style="text-align: center;" class="col-md-1">#</th>
+                        <th  style="text-align: center;" class="col-md-4">Nombre</th>
+                        <th  style="text-align: center;" class="col-md-3">Calorias</th>
+                        <th  style="text-align: center;" class="col-md-3">Precio</th>
+                    </tr>
+                    </thead>
+                    <tbody  id="rows">
+                    {% for postre_ciclo in postres %}
+
+                    {% if postre_ciclo.nombre %}
+                    <tr id="{{ user.id }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td  class="datos">{{ postre_ciclo.nombre }}</td>
+                        <td  class="datos">{{ postre_ciclo.calorias }}</td>
+                        <td  class="datos">{{ postre_ciclo.precio }}</td>
+                        <td>
+                            <div class="btn-group pull-right">
+            <!-- Esto debe ir dentro del primer if de inmediatamente inferior:
+            not perms.Gestionusuarios.consulta_usuario and not not perms.Gestionusuarios.modificar_usuario and not perms.Gestionusuarios.eliminar_usuario -->
+            {% if not perms.GestionPlatos.consultar_postre and  not perms.GestionPlatos.modificar_postre and not perms.GestionPlatos.eliminar_postre  %}
+            <button type="button" class="btn disabled dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-gear"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+            {% else %}
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-gear"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {% if perms.GestionPlatos.consultar_postre  %}
+                    <li><a href="{% url 'consultar_postre' postre_ciclo.id %}">Consultar</a></li>
+                {% endif %}
+                {% if perms.GestionPlatos.modificar_postre  %}
+                  <li><a href="{% url 'modificar_postre' postre_ciclo.id %}">Modificar</a></li>
+                {% endif %}
+                {% if perms.GestionPlatos.eliminar_postre  %}
+                    <li><a href="{% url 'eliminar_postre' postre_ciclo.id %}">Eliminar</a></li>
+                {% endif %}
+                <!--<li class="divider"></li>
+                <li><a href="#">Separated link</a></li>-->
+              </ul>
+            {% endif %}
+        </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            <!--</div>-->
+            </div>
+            </div>
+        </div>
+    {% endif %}
+    <div>
+        <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Volver">
+    </div>
+</div>
+
+
+{% endblock %}

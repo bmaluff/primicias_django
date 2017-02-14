@@ -1,0 +1,72 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+    <h2 class="box-tittle" align="center">Listar Rol</h2>
+{% endblock %}
+{% block contenido %}
+<div  style="text-align: center;" class="panel-body box-body table-responsive no-padding">
+    <div  style=" display:inline;"  >
+        <form method='post'>{% csrf_token %}
+            {{ form }}
+            <input type='submit' value='Buscar'>
+        </form>
+    </div>
+    {% if usuario != 'NULL' %}
+    <div class="col-md-12">
+        <div class="box box-solid">
+            <div class="box-body" align="center">
+<!--        <div class="table-responsive">-->
+            <table class="table table-striped table-responsive" style="text-align:center; margin-bottom:90px;" id="table-1">
+                <thead>
+                <tr class="text-info">
+                    <th  style="width: 10px">#</th>
+                    <th  style="text-align:center">Nombre de Rol</th>
+                    <th style="text-align:center"> Acciones</th>
+                </tr>
+                </thead>
+                <tbody  id="rows">
+                {% for rol_ciclo in roles %}
+                <tr id="{{ user.id }}">
+                    <td>{{ forloop.counter }}</td>
+                    <td  class="datos">{{ rol_ciclo.name }}</td>
+                    
+                    <td>
+                    <div class="btn-group">
+                      <!--<button type="button" class="btn btn-default">Consultar</button>
+                        Aqui debe ir la condicion para que bloquee el boton para un usuario sin privelegios para que el boton salga deshabilitado-->{% if not perms.GestionRolesyPermisos.consulta_rol and  not perms.GestionRolesyPermisos.modifica_rol and not perms.GestionRolesyPermisos.elimina_rol %}
+                        <button type="button" class="btn disabled" data-toggle="dropdown">
+                        <span class="fa fa-gear"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                        {% else %}
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="fa fa-gear"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                        {% if perms.GestionRolesyPermisos.consulta_rol  %}
+                    <li><a href="{% url 'consultar_rol' rol_ciclo.id %}">Consultar</a></li>
+                {% endif %}
+                {% if perms.GestionRolesyPermisos.modificar_rol  %}
+                  <li><a href="{% url 'modificar_rol' rol_ciclo.id %}">Modificar</a></li>
+                {% endif %}
+                {% if perms.GestionRolesyPermisos.eliminar_rol  %}
+                    <li><a href="{% url 'eliminar_rol' rol_ciclo.id %}">Eliminar</a></li>
+                {% endif %}
+                    </div>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        <!--</div>-->
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>Seleccion Invalida</p>
+    {% endif %}
+    <div align="center">
+        <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Volver">
+    </div>
+</div>
+{% endblock %}

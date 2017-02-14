@@ -1,0 +1,51 @@
+{% extends 'Sistema/main.html' %}
+
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+</style>
+    <div style="text-align: center;" class="box-body">
+        <h2>Modificacion de Rol</h2>
+        <div class="col-md-10 col-centered">
+            <div class="box box-solid">
+                <form id="formulario" method="post" action="">{% csrf_token %}
+                    {% load widget_tweaks %}
+                    <div class="box-body">
+                        <table class="table">
+                            <tr>
+                                {% if formulario.name %}
+                                <th>{{ formulario.name.label_tag }}</th>
+                                <td>
+                                     {% render_field formulario.name class+="form-control" %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    {{formulario.permissions.label_tag}}
+                                </th>
+                                <td>
+                                    {% render_field formulario.permissions class+="form-control" %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                        </div>
+                        <div align="center">
+
+                            <input type="submit" class="btn btn-primary" name="Guardar" value="Guardar">
+                            <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Cancelar">
+                        </div>
+                    </div>
+                </form>
+            
+        </div>
+    </div>
+        
+{% endblock %}

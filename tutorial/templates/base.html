@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static "admin/bootstrap/css/bootstrap.min.css"%}">
+    <!--<link rel="stylesheet" href="{% static "admin/css/base.css"%}">-->
+    <!--<link rel="stylesheet" href="{% static "admin/plugins/font-awesome/css/font-awesome.min.css" %}">
+    en produccion comentar el vinculo de abajo y descomentar el de arriba-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static "admin/plugins/ionicons/css/ionicons.min.css"%}">
+    <link rel="stylesheet" href="{% static "admin/plugins/datepicker/datepicker3.css"%}">
+    <link rel="stylesheet" href="{% static "admin/dist/css/AdminLTE.min.css"%}">
+    <link rel="stylesheet" href="{% static "admin/dist/css/skins/_all-skins.min.css"%}">
+    <link rel="stylesheet" href="{% static "admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css"%}">
+    <!--<script type='text/javascript' src="{% static "admin/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script type='text/javascript' src="{% static "admin/js/jquery.init.js" %}"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.theme.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script type='text/javascript' src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/highcharts.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/datepicker-init.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/home/principal.css">
+    <script type="text/javascript" src="{{ STATIC_URL }}js/home/principal.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>-->
+</head>
+<body>
+
+{% block header %}
+{% endblock %}
+
+<div style="height: 20%;">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+
+<footer>
+    {% block footer %}
+    {% endblock %}
+</footer>
+
+</html>

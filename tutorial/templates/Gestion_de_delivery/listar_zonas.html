@@ -1,0 +1,109 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+    <h2 class="box-tittle" align="center">Listar Zonas</h2>
+{% endblock %}
+
+
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+</style>
+
+<div  style="text-align: center;" class="panel-body box-body">
+    <div>
+        <!--<form method='post'>{% csrf_token %}
+            <div class="col-md-3 col-centered">
+                <div class="input-group">    
+                {% load widget_tweaks %}
+                {% render_field form.Busqueda class+="form-control" %}
+                    <span class="input-group-btn">
+                        <button type='submit' name="search" class="btn btn-flat">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+        </form>-->
+    </div>
+    {% if error %}
+        <div class="alert alert-danger alert-dismissible " role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Error!</strong> Seleccione una Zona!
+        </div>
+    {% endif %}
+    {% if zonas != 'NULL' %}
+    <div class="col-md-10 col-centered">
+        <div class="box box-solid">
+        <div class="box-body" style="text-align: center;">
+            <!--<div class="table-responsive">-->
+                <table class="table table-striped table-responsive" style="margin-bottom:90px;">
+                    <thead>
+                    <tr class="text-info">
+                        <th style="text-align: center;" class="col-md-1">#</th>
+                        <th  style="text-align: center;" class="col-md-4">Nombre</th>
+                        <th  style="text-align: center;" class="col-md-3">Encargado</th>
+                    </tr>
+                    </thead>
+                    <tbody  id="rows">
+                    {% for zona_ciclo in zonas %}
+
+                    {% if zona_ciclo.nombre %}
+                    <tr id="{{ user.id }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td  class="datos">{{ zona_ciclo.nombre }}</td>
+                        <td  class="datos">{{ zona_ciclo.encargado.first_name }} {{zona_ciclo.encargado.last_name}}</td>
+                        <td>
+                            <div class="btn-group pull-right">
+            <!-- Esto debe ir dentro del primer if de inmediatamente inferior:
+            not perms.Gestionusuarios.consulta_usuario and not not perms.Gestionusuarios.modificar_usuario and not perms.Gestionusuarios.eliminar_usuario -->
+            {% if not perms.GestionDelivery.consultar_zona and  not perms.GestionDelivery.modificar_zona and not perms.GestionDelivery.eliminar_zona  %}
+            <button type="button" class="btn disabled dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-gear"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+            {% else %}
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-gear"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {% if perms.GestionDelivery.consultar_zona  %}
+                    <li><a href="{% url 'consultar_zona' zona_ciclo.id %}">Consultar</a></li>
+                {% endif %}
+                {% if perms.GestionDelivery.modificar_zona  %}
+                  <li><a href="{% url 'modificar_zona' zona_ciclo.id %}">Modificar</a></li>
+                {% endif %}
+                {% if perms.GestionDelivery.eliminar_zona  %}
+                    <li><a href="{% url 'eliminar_zona' zona_ciclo.id %}">Eliminar</a></li>
+                {% endif %}
+                <!--<li class="divider"></li>
+                <li><a href="#">Separated link</a></li>-->
+              </ul>
+            {% endif %}
+        </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            <!--</div>-->
+            </div>
+            </div>
+        </div>
+    {% endif %}
+    <div>
+        <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Volver">
+    </div>
+</div>
+
+
+{% endblock %}

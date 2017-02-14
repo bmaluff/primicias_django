@@ -1,0 +1,100 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+    <h2 class="box-tittle" align="center">Listar Usuarios</h2>
+{% endblock %}
+
+
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+</style>
+
+<div  style="text-align: center;" class="panel-body box-body no-padding">
+        <div  style=" display:inline;"  >
+            <form method='post'>{% csrf_token %}
+
+                {{ form }}
+                <input type='submit' value='Buscar'>
+
+            </form>
+        </div>
+        {% if error %}
+        <div class="alert alert-danger alert-dismissible " role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Error!</strong> Seleccione un usuario!
+        </div>
+    {% endif %}
+    {% if usuario != 'NULL' %}
+    <div class="col-md-10 col-centered">
+        <div class="box box-solid">
+        <div class="box-body" style="text-align: center;">
+            <!--<div class="table-responsive">-->
+                <table class="table table-striped table-responsive" style="margin-bottom:90px;">
+                    <thead>
+                    <tr class="text-info">
+                        <th style="text-align: center;" class="col-md-1">#</th>
+                        <th  style="text-align: center;" class="col-md-1">Nombre de usuario</th>
+                        <th  style="text-align: center;" class="col-md-1">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody  id="rows">
+                    {% for usuario_ciclo in usuarios %}
+
+                    {% if usuario_ciclo.username %}
+                    <tr id="{{ user.id }}">
+                        <td>{{ forloop.counter }}</td>
+                        <td  class="datos">{{ usuario_ciclo.username }}</td>
+                        <td>
+                            <div class="btn-group pull-right">
+            <!-- Esto debe ir dentro del primer if de inmediatamente inferior:
+            not perms.Gestionusuarios.consulta_usuario and not not perms.Gestionusuarios.modificar_usuario and not perms.Gestionusuarios.eliminar_usuario -->
+            {% if not perms.GestionUsuarios.consulta_usuario and not not perms.GestionUsuarios.modificar_usuario and not perms.GestionUsuarios.eliminar_usuario  %}
+            <button type="button" class="btn disabled dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-gear"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+            {% else %}
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-gear"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                {% if perms.GestionUsuarios.consulta_usuario  %}
+                    <li><a href="{% url 'consultar_usuario' usuario_ciclo.id %}">Consultar</a></li>
+                {% endif %}
+                {% if perms.GestionUsuarios.modificar_usuario  %}
+                  <li><a href="{% url 'modificar_usuario' usuario_ciclo.id %}">Modificar</a></li>
+                {% endif %}
+                {% if perms.GestionUsuarios.eliminar_usuario  %}
+                    <li><a href="{% url 'eliminar_usuario' usuario_ciclo.id %}">Eliminar</a></li>
+                {% endif %}
+                <!--<li class="divider"></li>
+                <li><a href="#">Separated link</a></li>-->
+              </ul>
+            {% endif %}
+        </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            <!--</div>-->
+            </div>
+            </div>
+        </div>
+    {% endif %}
+    <div>
+        <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Volver">
+    </div>
+</div>
+
+
+{% endblock %}

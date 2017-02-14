@@ -1,0 +1,90 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+    Crear Cliente
+{% endblock %}
+{% block contenido %}
+<style type="text/css" media="screen">
+select { width: 100px; margin-right: 20px; }
+    .required {
+        color: red;
+    }
+    .form-control {
+        width: 97%;
+        float: left;
+    }
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+    }
+</style>
+
+<div  style="text-align: center;" class="box-body no-padding">
+    <h2>Registro de Zona</h2>
+    {% if error == 'vacio' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Complete los datos requeridos antes de guardar.
+    </div>
+    {%endif%}
+
+    {% if error == 'ninguno' %}
+    <div class="alert  alert-success alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Cliente creado de forma exitosa.</strong> .
+    </div>
+    {%endif%}
+    <div align="center" class="col-md-6 col-centered">
+        <div class="box box-solid">
+    
+    <form action="" method="post" style="text-align:left;" id="crear_zona_form">{% csrf_token %}
+        
+
+                <table class="table table-hover table-responsive">
+                    <thead>
+                    <tr class="text-info">
+                        <th style="text-align: center;" colspan="2">Informacion</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rows" >
+                    <tr>
+                        <td ><label class="control-label" for="nombre">Nombre<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="nombre" type="text" name="nombre"  value="{{zona.nombre}}" class="form-control" placeholder="Ej: Zona 1" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="encargado">Encargado<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td>
+                            <select class="form-control" id="sel_encargado" name="encargado">
+                    {% for elemento in encargados %}
+                    <option value={{elemento.id}}>{{elemento.first_name}} {{elemento.last_name}}</option>
+                    {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>    
+</div>
+
+
+
+<div align="center">
+    <!-- Aqui va la condicional el if de los permisos para guardar--><input type="submit" class="btn btn-primary"  name="Guardar" value="Guardar">
+    <input type="reset" class="btn btn-info" value="Reestablecer Datos">
+    <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Cancelar">
+</div>
+
+</form>
+<script>
+    $("#crear_zona_form").validate({
+        rules: {
+            nombre: "required",
+            encargado: "required",
+        }
+    });
+</script>
+{% endblock %}

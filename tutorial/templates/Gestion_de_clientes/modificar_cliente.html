@@ -1,0 +1,135 @@
+{% extends 'Sistema/main.html' %}
+
+{% block contenido %}
+<style type="text/css" media="screen">
+select { width: 100px; margin-right: 20px; }
+    .required {
+        color: red;
+    }
+    .form-control {
+        width: 97%;
+        float: left;
+    }
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+    }
+</style>
+
+<div  style="text-align: center;" class="box-body no-padding">
+    <h2>Modificar Cliente</h2>
+    {% if error == 'vacio' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Complete los datos requeridos antes de guardar.
+    </div>
+    {%endif%}
+
+    {% if error == 'ninguno' %}
+    <div class="alert  alert-success alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Cliente creado de forma exitosa.</strong> .
+    </div>
+    {%endif%}
+    <div align="center" class="col-md-6 col-centered">
+        <div class="box box-solid">
+    
+    <form action="" method="post" style="text-align:left;" id="crear_cliente_form">{% csrf_token %}
+        
+
+                <table class="table table-hover table-responsive">
+                    <thead>
+                    <tr class="text-info">
+                        <th style="text-align: center;" colspan="2">Informacion</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rows" >
+                    <tr>
+                        <td ><label class="control-label" for="nombre">Nombre<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="nombre" type="text" name="nombre"  value="{{cliente.nombre}}" class="form-control" placeholder="Ej: Juan" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="apellido">Apellido<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="apellido" type="text" name="apellido"  value="{{cliente.apellido}}" class="form-control" placeholder="Ej: Perez" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="ruc_ci">RUC/CI (Opcional)</label> </td>
+                        <td><input id="ruc_ci" type="text" name="ruc_ci"  value="{{cliente.ruc_ci}}" class="form-control" placeholder="Ej: 80012345-0" value=""> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="telefono_input">Telefono<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="telefono_input" type="text" name="telefono"  value="{{cliente.telefono}}" class="form-control" placeholder="Ej: 021-123456" minlength="6" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="telefono_2">Celular (Opcional)</label> </td>
+                        <td><input id="telefono_2" type="text" name="telefono_2"  value="{{cliente.telefono_2}}" class="form-control" placeholder="Ej: 0961-123456" value=""> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="direccion_input" id="direccion_label">Direccion<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="direccion_input" type="text" name="direccion"  value="{{cliente.direccion}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España" required> </td>
+                    </tr>
+                    <tr>
+                        <td><label class="control-label" for="direccion_input" id="direccion_label">Zona<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><select name="zona_1" id="sel_zona_1" class="form-control" required>
+                                {% for item in zonas %}
+                                <option {% if item.id == cliente.zona1|add:0 %} selected {% endif %} value={{item.id}}>{{item.nombre}}</option>
+                                {% endfor %}
+                            </select> 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="control-label" for="direccion_input" id="direccion_label">Direccion Alternativa</label> </td>
+                        <td><input id="direccion_2_input" type="text" name="direccion_2"  value="{{cliente.direccion2}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España"> </td>
+                    </tr>
+                    <tr id="tr_zona2" {%if not cliente.direccion2 %}hidden{%endif%}>
+                        <td><label class="control-label" for="direccion_input" id="direccion_label">Zona Alternativa<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><select name="zona_2" id="sel_zona_2" class="form-control">
+                                {% for item in zonas %}
+                                <option {%if item.id == cliente.zona2|add:0%} selected {%endif%}value={{item.id}}>{{item.nombre}}</option>
+                                {% endfor %}
+                            </select> 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td ><label class="control-label" for="email">Email</label> </td>
+                        <td><input id="correo" type="email" name="correo"  value="{{cliente.correo}}" class="form-control" placeholder="Ej: jperez@gmail.com"> </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>    
+</div>
+
+
+
+<div align="center">
+    <!-- Aqui va la condicional el if de los permisos para guardar--><input type="submit" class="btn btn-primary"  name="Guardar" value="Guardar">
+    <input type="reset" class="btn btn-info" value="Reestablecer Datos">
+    <input type="submit" class="btn btn-info" name="Cancelar" value="Cancelar">
+</div>
+
+</form>
+<script>
+    $("#crear_cliente_form").validate({
+        rules: {
+            nombre: "required",
+            apellido: "required",
+            telefono: {
+                required: true,
+                minlength: 6,
+            },
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#direccion_2_input').change(function(){
+                $('#tr_zona2').show();
+            });
+    });  
+</script>
+{% endblock %}
