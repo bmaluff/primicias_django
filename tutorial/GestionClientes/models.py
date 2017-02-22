@@ -7,10 +7,6 @@ from django.db import models
 class cliente(models.Model):
     nombre = models.CharField(max_length=40)
     apellido = models.CharField(max_length=50)
-    direccion = models.CharField(max_length=150)
-    zona1 = models.CharField(max_length=3, null=True)
-    direccion2 = models.CharField(max_length=150, blank=True)
-    zona2 = models.CharField(max_length=3, null=True)
     correo = models.EmailField(blank=True)
     telefono = models.CharField(max_length=12)
     telefono_2 = models.CharField(max_length=12, blank=True)
@@ -27,3 +23,12 @@ class cliente(models.Model):
             ('crear_cliente', 'Crear Cliente'),
             ('listar_cliente', 'Listar Cliente'),
             )
+
+
+class direccionesXcliente(models.Model):
+    direccion = models.CharField(max_length=150)
+    cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
+    zona = models.CharField(max_length=2)
+
+    def __str__(self):
+        return self.direccion

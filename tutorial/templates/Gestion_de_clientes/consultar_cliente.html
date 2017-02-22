@@ -44,25 +44,17 @@
             <dd>{{cliente.telefono_2}}</dd>
               <br>
             {% endif %}
-            <dt>Direccion</dt>
-            <dd>{{cliente.direccion}}</dd>
-              <br>
-            <dt>Zona</dt>
-            <dd>{{zona_1.nombre}}</dd>
-              <br>
-            {% if cliente.direccion2 %}
-            <dt>Direccion</dt>
-            <dd>{{cliente.direccion2}}</dd>
-              <br>
-            <dt>Zona Alternativa</dt>
-            <dd>{{zona_2.nombre}}</dd>
-              <br>
-            {% endif %}
             {% if cliente.correo %}
             <dt>Email</dt>
             <dd>{{cliente.correo}}</dd>
+            <br>
             {% endif %}
-            
+            {% for item in direccionesActuales %}
+            <dt>Direccion</dt>
+            <dd>{{item.direccion}}</dd>
+            <br>
+            {% endfor %}
+
           </dl>
         </div><!-- /.box-body -->
       </div><!-- /.box -->

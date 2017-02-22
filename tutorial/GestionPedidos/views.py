@@ -1,6 +1,6 @@
 from django.shortcuts import render, render_to_response
 from django.db.models import Q
-from tutorial.GestionClientes.models import cliente
+from tutorial.GestionClientes.models import cliente, direccionesXcliente
 from tutorial.GestionPlatos.models import postre
 from .forms import Tipos_Pedido_form
 from .models import pedido, detalle_pedido, factura, pago
@@ -21,8 +21,8 @@ def crear_pedido_view(request):
     """
     Redirecciona a la interfaz para la creacion de un usuario nuevo
     """
-    #Primero creara un usuario de forma temporal para poder asignar los
-    #permisos que sean elegidos
+    # Primero creara un usuario de forma temporal para poder asignar los
+    # permisos que sean elegidos
     usuario_sesion = usuario_main(request)
     if request.method == 'POST' and 'Guardar' in request.POST:
         id_cliente = request.POST.get('datos[id_cliente]')
@@ -82,14 +82,15 @@ def crear_pedido_view(request):
             fecha_pago = datetime.strptime(str(lista_fecha[0]), "%d/%m/%Y")
         #########
         cliente_pedido = cliente.objects.get(pk=id_cliente)
-        nuevo_pedido = pedido(fecha_pedido=fecha_pedido,
+        nuevo_pedido = pedido(
+            fecha_pedido=fecha_pedido,
             cliente=cliente_pedido, costo_pedido=costo,
             factura=quiere_factura, tipo_pago=tipo_pago, fecha_pago=fecha_pago)
-        #if tipo_pago == 'S':
+        # if tipo_pago == 'S':
         #    nuevo_pedido.fecha_pago = fecha_pago
-        #elif tipo_pago == 'D' and len(lista_fecha) > 1:
+        # elif tipo_pago == 'D' and len(lista_fecha) > 1:
         #    nuevo_pedido.fecha_pago = ultima_fecha(lista_fecha)
-        #elif tipo_pago == 'D' and len(lista_fecha) == 1:
+        # elif tipo_pago == 'D' and len(lista_fecha) == 1:
         #    nuevo_pedido.fecha_pago = fecha_pedido
         print(('Pedido:  ', vars(nuevo_pedido).items()))
         nuevo_pedido.save()
@@ -98,7 +99,8 @@ def crear_pedido_view(request):
             zona_pago = cliente_pago.zona1
         else:
             zona_pago = cliente_pago.zona2
-        nueva_factura = factura(cliente=cliente_pago,
+        nueva_factura = factura(
+            cliente=cliente_pago,
             fecha_pago=fecha_pago, telefono=telefono_pago,
             direccion=direccion_pago, zona=zona_pago,
             cod_pedido=nuevo_pedido.id, cod_det_pedido=0)
@@ -133,10 +135,11 @@ def crear_pedido_view(request):
                 zona_pago = cliente_pago.zona1
             else:
                 zona_pago = cliente_pago.zona2
-            nueva_factura = factura(cliente=cliente_pago,
-            fecha_pago=fecha_pago, direccion=direccion_pago,
-            telefono=telefono_pago, zona=zona_pago,
-            cod_pedido=nuevo_pedido.id, cod_det_pedido=nuevo_detalle.id)
+            nueva_factura = factura(
+                cliente=cliente_pago,
+                fecha_pago=fecha_pago, direccion=direccion_pago,
+                telefono=telefono_pago, zona=zona_pago,
+                cod_pedido=nuevo_pedido.id, cod_det_pedido=nuevo_detalle.id)
             nueva_factura.save()
         for i in list(request.POST.items()):
             print(('I: ', i))
@@ -150,7 +153,21 @@ def crear_pedido_view(request):
         ('D', 'Diario'),
         ('S', 'Semanal'),
         )
-    return render_to_response("Gestion_de_pedidos/crear_pedido.html",
+    if request.method == 'POST' and 'eleccion' in request.POST:
+        clienteSeleccionado = cliente.objects.get(pk=request.POST.get(
+            'radio_cliente'))
+        direccionesActuales = direccionesXcliente.objects.filter(
+            cliente=clienteSeleccionado)
+        return render_to_response("Gestion_de_pedidos/crear_pedido.html",
+                                  {'opc_comida': TIPO_COMIDA,
+                                   'opc_postre': postres,
+                                   'opc_pago': TIPO_PAGO,
+                                   "usuario_sesion": usuario_sesion,
+                                   'cliente': clienteSeleccionado,
+                                   'direccionesActuales': direccionesActuales},
+                                  context_instance=RequestContext(request))
+    return render_to_response(
+        "Gestion_de_pedidos/crear_pedido.html",
         {'opc_comida': TIPO_COMIDA, 'opc_postre': postres,
             'opc_pago': TIPO_PAGO, "usuario_sesion": usuario_sesion},
         context_instance=RequestContext(request))
@@ -158,20 +175,40 @@ def crear_pedido_view(request):
 
 @login_required(login_url="/login/")
 def ajax_cliente_search_view(request):
+    # esta importacion sirve para debuggear
+    # import pdb; pdb.set_trace()
     busqueda = request.POST.get('sugerencia')
+    direccionesPosibles = []
+    cliente_posible = ''
     if busqueda is not None:
-        cliente_posible = cliente.objects.filter(Q(nombre__icontains=busqueda) |
+        cliente_posible = cliente.objects.filter(
+            Q(nombre__icontains=busqueda) |
             Q(apellido__icontains=busqueda) |
             Q(telefono__icontains=busqueda) |
             Q(ruc_ci__icontains=busqueda) |
-            Q(telefono_2__icontains=busqueda)).order_by('nombre')
-    if request.method == 'POST':        
-        print(('Texto: ', cliente_posible))
-        return render_to_response("Gestion_de_pedidos/actualizar_clientes.html",
-            {'cliente_posible': cliente_posible}, RequestContext(request))
+            Q(telefono_2__icontains=busqueda)).filter(
+                is_active='True').order_by('nombre')
+    for item in cliente_posible:
+        elementos = direccionesXcliente.objects.filter(cliente=item.id)
+        for elemento in elementos:
+            direccionesPosibles.append(elemento)
+    if request.method == 'POST':
+        # print(('Texto: ', cliente_posible))
+        print 'Direcciones Posibles'
+        # print direccionesPosibles
+        print 'Clientes Posibles'
+        print cliente_posible
+        return render_to_response(
+            "Gestion_de_pedidos/actualizar_clientes.html",
+            {'cliente_posible': cliente_posible,
+                'direccionesPosibles': direccionesPosibles},
+            context_instance=RequestContext(request))
     else:
-        return render_to_response("Gestion_de_pedidos/actualizar_clientes.html",
-            {'cliente_posible': cliente_posible}, RequestContext(request))
+        return render_to_response(
+            "Gestion_de_pedidos/actualizar_clientes.html",
+            {'cliente_posible': cliente_posible,
+             'direccionesPosibles': direccionesPosibles},
+            RequestContext(request))
 
 
 @login_required(login_url="/login/")

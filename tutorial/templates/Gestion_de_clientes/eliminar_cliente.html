@@ -16,9 +16,9 @@
     <div  style="text-align: center;" class="panel-body box-body no-padding">
         <div class="col-md-11 col-centered" style="text-align: center;">
         <div class="box box-warning" style="margin-top: 90px;">
-        <h2>Desea eliminar al cliente {{ nombre }} ?</h2><br>
-        
-            
+        <h2>Desea eliminar al cliente {{ cliente.nombre }} {{ cliente.apellido }} ?</h2><br>
+
+
 
             <form action="" method="post"  style="text-align:left; ">{% csrf_token %}
                 <div class="alert alert-danger" role="alert" style="text-align: center">

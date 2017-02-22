@@ -41,7 +41,7 @@ class detalle_pedido(models.Model):
         ('S', 'Saludable'),
         )
     cod_pedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
-    #comida = models.ForeignKey(comida) este el tipo de columna para el futuro
+    # comida = models.ForeignKey(comida) este el tipo de columna para el futuro
     comida = models.CharField(max_length=1, choices=TIPO_COMIDA)
     postre = models.ForeignKey(postre, null=True, blank=True)
     cantidad_comida = models.IntegerField(default=1)

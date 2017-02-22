@@ -39,9 +39,9 @@ select { width: 100px; margin-right: 20px; }
     {%endif%}
     <div align="center" class="col-md-6 col-centered">
         <div class="box box-solid">
-    
+
     <form action="" method="post" style="text-align:left;" id="crear_cliente_form">{% csrf_token %}
-        
+
 
                 <table class="table table-hover table-responsive">
                     <thead>
@@ -49,7 +49,7 @@ select { width: 100px; margin-right: 20px; }
                         <th style="text-align: center;" colspan="2">Informacion</th>
                     </tr>
                     </thead>
-                    <tbody id="rows" >
+                    <tbody id="rows" class="input_direcciones_wrap">
                     <tr>
                         <td ><label class="control-label" for="nombre">Nombre<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
                         <td><input id="nombre" type="text" name="nombre"  value="{{usuario.nombre}}" class="form-control" placeholder="Ej: Juan" required> </td>
@@ -70,40 +70,27 @@ select { width: 100px; margin-right: 20px; }
                         <td><label class="control-label" for="telefono_2">Celular (Opcional)</label> </td>
                         <td><input id="telefono_2" type="text" name="telefono_2"  value="{{usuario.telefono_2}}" class="form-control" placeholder="Ej: 0961-123456" value=""> </td>
                     </tr>
-                        <tr>
-                        <td><label class="control-label" for="direccion_input" id="direccion_label">Direccion<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
-                        <td><input id="direccion_input" type="text" name="direccion"  value="{{usuario.direccion}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España" required> </td>
-                    </tr>
-                        <tr>
-                        <td><label class="control-label" for="direccion_input" id="direccion_label">Zona<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
-                        <td><select name="zona_1" id="sel_zona_1" class="form-control" required>
-                                {% for item in zonas %}
-                                <option value={{item.id}}>{{item.nombre}}</option>
-                                {% endfor %}
-                            </select> 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label class="control-label" for="direccion_input" id="direccion_label">Direccion Alternativa</label> </td>
-                        <td><input id="direccion_2_input" type="text" name="direccion_2"  value="{{usuario.direccion2}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España"> </td>
-                    </tr>
-                    <tr id="tr_zona2" hidden>
-                        <td><label class="control-label" for="direccion_input" id="direccion_label">Zona Alternativa<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
-                        <td><select name="zona_2" id="sel_zona_2" class="form-control">
-                                {% for item in zonas %}
-                                <option value={{item.id}}>{{item.nombre}}</option>
-                                {% endfor %}
-                            </select> 
-                        </td>
-                    </tr>
                     <tr>
                         <td ><label class="control-label" for="email">Email</label> </td>
                         <td><input id="correo" type="email" name="correo"  value="{{usuario.correo}}" class="form-control" placeholder="Ej: jperez@gmail.com"> </td>
                     </tr>
+                    <tr>
+                    <td><label class="control-label" for="direccion_input" id="direccion_label">Direccion<i class="fa fa-asterisk required" id="icon_required"></i></label> <button class="btn btn-flat add_direcciones_button pull-right"><i class="fa fa-plus"></i></button></td>
+                    <td><input id="direccion_input" type="text" name="direcciones"  value="{{usuario.direccion}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España" required> </td>
+                </tr>
+                    <tr>
+                    <td><label class="control-label" for="sel_zona_1" id="direccion_label">Zona<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                    <td><select name="zonas" id="sel_zona_1" class="form-control" required>
+                            {% for item in zonas %}
+                            <option value={{item.id}}>{{item.nombre}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
                     </tbody>
                 </table>
             </div>
-            </div>    
+            </div>
 </div>
 
 
@@ -136,6 +123,38 @@ select { width: 100px; margin-right: 20px; }
                     $('#tr_zona2').attr('required')
                 }
             });
-    });  
+            var max_fields      = 10; //maximum input boxes allowed
+            var wrapper         = $(".input_direcciones_wrap"); //Fields wrapper
+            var add_button      = $(".add_direcciones_button"); //Add button ID
+
+            var x = 1; //initlal text box count
+            $(add_button).click(function(e){ //on add input button click
+                e.preventDefault();
+                if(x < max_fields){ //max input box allowed
+                    x++; //text box increment
+                    $(wrapper).append('<tr><td><label class="control-label" for="direccion_input" id="direccion_label">Direccion<i class="fa fa-asterisk required" id="icon_required"></i></label> <button class="btn btn-flat remove_field pull-right"><i class="fa fa-trash"></i></button></td><td><input id="direccion_input" type="text" name="direcciones"  value="{{usuario.direccion}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España" required> </td></tr><tr>'+
+                    '<td><label class="control-label" for="sel_zona_1" id="direccion_label">Zona<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>'+
+                    '<td><select name="zonas" id="sel_zona_1" class="form-control" required>'+
+                            '{% for item in zonas %}'+
+                            '<option value={{item.id}}>{{item.nombre}}</option>'+
+                            '{% endfor %}'+
+                        '</select>'+
+                    '</td>'+
+                '</tr>');//add select
+                }
+            });
+
+            $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+                e.preventDefault();
+                $(this).parent('td').parent('tr').next().remove(); x--;
+                $(this).parent('td').parent('tr').remove(); x--;
+                /*$('#costo_input').val(function(i,oldval) {
+                        cadena = $('#costo_input').autoNumeric('get');
+                        valor = parseInt(cadena);
+                        return valor-=15000;
+                    });
+                $('#costo_input').autoNumeric('set', valor);*/
+            })
+    });
 </script>
 {% endblock %}

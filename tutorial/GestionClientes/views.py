@@ -1,7 +1,7 @@
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
-from .models import cliente
+from .models import cliente, direccionesXcliente
 #from django.contrib.auth.decorators import login_required
 from .forms import Tipos_Usuario_form
 from django.db.models import Q
@@ -16,8 +16,8 @@ def crear_cliente_view(request):
     """
     Redirecciona a la interfaz para la creacion de un usuario nuevo
     """
-    #Primero creara un usuario de forma temporal para poder asignar los
-    #permisos que sean elegidos
+    # Primero creara un usuario de forma temporal para poder asignar los
+    # permisos que sean elegidos
     usuario_sesion = usuario_main(request)
     if request.method == 'POST' and 'Guardar' in request.POST:
         nombre = request.POST.get('nombre')
@@ -25,37 +25,38 @@ def crear_cliente_view(request):
         correo = request.POST.get('correo')
         telefono = request.POST.get('telefono')
         telefono_2 = request.POST.get('telefono_2')
-        direccion = request.POST.get('direccion')
-        direccion2 = request.POST.get('direccion_2')
+        direcciones = request.POST.getlist('direcciones')
         ruc_ci = request.POST.get('ruc_ci')
-        zona1 = request.POST.get('zona_1')
-        zona2 = ''
-        if direccion2 != '':
-            zona2 = request.POST.get('zona_2')
-
-        #Controla que el usuario a crear sea unico
-        #if User.objects.filter(username=username).exists():
-        #    return render_to_response("Gestion_de_usuarios/crear_usuario.html",
-        #                              {'error': 'existente',
+        zonas = request.POST.getlist('zonas')
+        # Controla que el usuario a crear sea unico
+        # if User.objects.filter(username=username).exists():
+        # return render_to_response("Gestion_de_usuarios/crear_usuario.html",
+        #                        {'error': 'existente',
         #                                  'disponibles': grupo_de_permisos},
         #                              context_instance=RequestContext(request))
 
-        #Controlara que se haya seleccionado al menos un rol
-        #if len(roles_asignados) == 0:
-        #    return render_to_response("Gestion_de_usuarios/crear_usuario.html",
+        # Controlara que se haya seleccionado al menos un rol
+        # if len(roles_asignados) == 0:
+        #   return render_to_response("Gestion_de_usuarios/crear_usuario.html",
         #                              {'error': 'roles',
         #                                  'disponibles': grupo_de_permisos},
         #                              context_instance=RequestContext(request))
-        #Controla que no se hayan dejado en blanco ningun campo
-        if nombre != '' and apellido != '' and direccion != '' and \
+        # Controla que no se hayan dejado en blanco ningun campo
+        if nombre != '' and apellido != '' and direcciones != '' and \
         telefono != '':
             # Se creara el cliente
             nuevo = cliente(correo=correo, telefono=telefono,
                 telefono_2=telefono_2, nombre=nombre,
-            apellido=apellido, direccion=direccion, ruc_ci=ruc_ci,
-            direccion2=direccion2, zona1=zona1, zona2=zona2)
+            apellido=apellido, ruc_ci=ruc_ci)
 
             nuevo.save()
+
+            for indice, elemento in enumerate(direcciones):
+                nuevaDireccion = direccionesXcliente(
+                    cliente=cliente.objects.get(pk=nuevo.id),
+                    direccion=elemento, zona=zonas[indice]
+                    )
+                nuevaDireccion.save()
             #Se agrega el rol que poseera el usuario
             return HttpResponseRedirect('/listar_clientes/')
         else:
@@ -130,8 +131,10 @@ def modificar_cliente_view(request, id_cliente):
     :return:
     """
     usuario_sesion = usuario_main(request)
-    #Se obtienen los datos del usuario
+    # Se obtienen los datos del usuario
     cliente_seleccionado = cliente.objects.get(pk=id_cliente)
+    direccionesActuales = direccionesXcliente.objects.filter(
+        cliente_id=cliente_seleccionado)
 #    usuario_seleccionado = funcionario.objects.get(pk=id_usuario)
 
     if request.method == 'POST' and 'Cancelar' in request.POST:
@@ -141,52 +144,54 @@ def modificar_cliente_view(request, id_cliente):
         cliente_seleccionado.nombre = request.POST.get('nombre')
         cliente_seleccionado.telefono = request.POST.get('telefono')
         cliente_seleccionado.telefono_2 = request.POST.get('telefono_2')
-        cliente_seleccionado.direccion = request.POST.get('direccion')
-        cliente_seleccionado.direccion2 = request.POST.get('direccion_2')
         cliente_seleccionado.apellido = request.POST.get('apellido')
         cliente_seleccionado.correo = request.POST.get('correo')
         cliente_seleccionado.ruc_ci = request.POST.get('ruc_ci')
-        cliente_seleccionado.zona1 = request.POST.get('zona_1')
-        cliente_seleccionado.zona2 = ''
-        if cliente_seleccionado.direccion2 != '':
-            cliente_seleccionado.zona2 = request.POST.get('zona_2')
+        direccionesNuevas = request.POST.getlist('direcciones')
+        zonasNuevas = request.POST.getlist('zonas')
             #Controla que no se hayan dejado en blanco ningun campo
         if cliente_seleccionado.apellido != '' \
         and cliente_seleccionado.nombre != '' \
         and cliente_seleccionado.telefono != '' \
-        and cliente_seleccionado.direccion != '':
+        and direccionesNuevas != '':
 
             cliente_seleccionado.save()
+            direccionesActuales.delete()
+            for indice, elemento in enumerate(direccionesNuevas):
+                nuevaDireccion = direccionesXcliente(
+                    cliente=cliente_seleccionado,
+                    direccion=elemento, zona=zonasNuevas[indice]
+                    )
+                nuevaDireccion.save()
+
             return HttpResponseRedirect('/listar_clientes/')
         else:
             return render_to_response(
                 "Gestion_de_clientes/modificar_cliente.html",
-                                      {'error': "vacio",
-                                      'cliente': cliente_seleccionado,
-                                      'usuario_sesion': usuario_sesion},
-                                          context_instance=
-                                          RequestContext(request))
+                {'error': "vacio", 'cliente': cliente_seleccionado,
+                 'usuario_sesion': usuario_sesion},
+                context_instance=RequestContext(request))
     zonas = zona.objects.filter(is_active=True)
     return render_to_response("Gestion_de_clientes/modificar_cliente.html",
                               {"cliente": cliente_seleccionado, 'zonas': zonas,
-                                  'usuario_sesion': usuario_sesion},
-                                      context_instance=RequestContext(request))
+                                  'usuario_sesion': usuario_sesion,
+                                  'direccionesActuales': direccionesActuales},
+                              context_instance=RequestContext(request))
 
 
 @login_required(login_url="/login/")
 def consultar_cliente_view(request, id_cliente):
     cliente_seleccionado = cliente.objects.get(pk=id_cliente)
-    zona1 = zona.objects.get(pk=cliente_seleccionado.zona1)
-    zona2 = ''
     usuario_sesion = usuario_main(request)
-    if cliente_seleccionado.zona2:
-        zona2 = zona.objects.get(pk=cliente_seleccionado.zona2)
+    direccionesActuales = direccionesXcliente.objects.filter(
+        cliente_id=cliente_seleccionado)
     if request.method == 'POST' and 'Retroceder' in request.POST:
         return HttpResponseRedirect('/listar_clientes/')
     return render_to_response("Gestion_de_clientes/consultar_cliente.html",
-        {"cliente": cliente_seleccionado, 'zona_1': zona1, 'zona_2': zona2,
-            'usuario_sesion': usuario_sesion},
-        context_instance=RequestContext(request))
+                              {"cliente": cliente_seleccionado,
+                               'direccionesActuales': direccionesActuales,
+                               'usuario_sesion': usuario_sesion},
+                              context_instance=RequestContext(request))
 
 
 @login_required(login_url="/login/")
@@ -206,5 +211,5 @@ def eliminar_cliente_view(request, id_cliente):
         return HttpResponseRedirect('/listar_clientes/')
     else:
         return render_to_response('Gestion_de_clientes/eliminar_cliente.html',
-            {'nombre': cliente_seleccionado.nombre,
+            {'cliente': cliente_seleccionado,
                 'usuario_sesion': usuario_sesion}, RequestContext(request))
