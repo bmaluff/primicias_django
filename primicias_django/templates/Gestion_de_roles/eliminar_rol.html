@@ -1,0 +1,29 @@
+{% extends 'Sistema/main.html' %}
+
+{% block contenido %}
+<style>
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+</style>
+
+    <div  style="text-align: center;" class="panel-body box-body no-padding">
+        <div class="col-md-11 col-centered" style="text-align: center;">
+        <div class="box box-warning" style="margin-top: 90px;">
+        <h2>Desea Eliminar {{ nombre }} ?</h2><br>
+
+            <form action="" method="post"  style="text-align:left; ">{% csrf_token %}
+                <div class="alert alert-danger" role="alert" style="text-align: center">
+                    <input type="submit" class="btn btn-primary" name="Aceptar" value="Aceptar">
+                    <input type="submit" class="btn btn-info" name="Cancelar" value="Cancelar">
+                </div>
+            </form>
+            </div>
+            </div>
+    </div>
+{% endblock %}

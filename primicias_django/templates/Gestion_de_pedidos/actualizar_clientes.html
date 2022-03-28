@@ -1,0 +1,48 @@
+<div hidden>
+  <select class="form-control" id="selPagadorDir" name="pagadorDir">
+      {% for elemento in direccionesPosibles %}
+      <option class="actualizable" name={{elemento.cliente.id}} value={{elemento.id}}>{{elemento.direccion}}</option>
+      {% endfor %}
+  </select>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped table-bordered table-hover"  id="tabla_clientes">
+      <thead>
+        <tr class="text-info">
+            <th style="text-align: center;" class="col-md-1">#</th>
+            <th  style="text-align: center;" class="col-md-1">Nombre</th>
+            <th  style="text-align: center;" class="col-md-1">Apellido</th>
+
+            <th  style="text-align: center;" class="col-md-1">Telefono</th>
+
+            <th  style="text-align: center;" class="col-md-1">Celular</th>
+
+
+            <th  style="text-align: center;" class="col-md-1">RUC/CI</th>
+
+            <th  style="text-align: center;" class="col-md-1"></th>
+        </tr>
+
+      </thead>
+      <tbody  id="rows">
+        {% for cliente_ciclo in cliente_posible %}
+
+        {% if cliente_ciclo.nombre %}
+        <tr id="{{ cliente_ciclo.id }}" class="item">
+            <td>{{ forloop.counter }}</td>
+            <td  class="datos nombre_cliente">{{ cliente_ciclo.nombre }}</td>
+            <td  class="datos apellido_cliente">{{ cliente_ciclo.apellido }}</td>
+
+            <td  class="datos telefono_cliente">{{ cliente_ciclo.telefono }}</td>
+
+            <td  class="datos telefono_2_cliente">{{ cliente_ciclo.telefono_2 }}</td>
+
+            <td  class="datos ruc_ci_cliente">{{ cliente_ciclo.ruc_ci }}</td>
+
+            <td  class="datos"><input class="radio_cliente" id="cliente_ciclo.id" name="radio_cliente" type="radio" value={{cliente_ciclo.id}}></td>
+        </tr>
+                {% endif %}
+                {% endfor %}
+      </tbody>
+  </table>
+</div>

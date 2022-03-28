@@ -1,0 +1,163 @@
+{% extends 'Sistema/main.html' %}
+
+{% block contenido %}
+<style type="text/css" media="screen">
+select { width: 100px; margin-right: 20px; }
+    .required {
+        color: red;
+    }
+    .form-control {
+        width: 97%;
+        float: left;
+    }
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+</style>
+<div  style="text-align: center;" class="box-body table-responsive no-padding">
+    <h2>Modificar usuario</h2>
+     {% if error == 'vacio' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Complete todos los datos antes de guardar.
+    </div>
+    {%endif%}
+
+    {% if error == 'existente' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Usuario ya existente, ingrese otro.
+    </div>
+    {%endif%}
+
+       {% if error == 'roles' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Debe seleccionar al menos un rol.
+    </div>
+    {%endif%}
+
+    {% if error == 'ninguno' %}
+    <div class="alert  alert-success alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Usuario modificado de forma exitosa.</strong> .
+    </div>
+    {%endif%}
+
+    <form action="" method="post"  style="text-align:left; " id="form1" lang="es">{% csrf_token %}
+        <div class="col-md-12">
+        <div class="box box-solid"> 
+            <div align="right" >    
+            <div   class="panel-body table-responsive no-padding"  align="center" >
+                <div class="table-responsive container col-md-6">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr class="text-info">
+                            <th style="text-align: center;">Informacion</th>
+                        </tr>
+                        </thead>
+                        <tbody id="rows" >
+                        <tr  >
+                            <td><label class="control-label" for="username">Usuario<i class="fa fa-asterisk required" id="icon_required"></i></label></td>
+                        <td><input id="username" type="text" name="username"  value="{{usuario.username}}" class="form-control" placeholder="Ej: jperez" required></td>
+                    </tr>
+                    <tr>
+                        <td ><label class="control-label" for="firstname">Nombre<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="firstname" type="text" name="firstname"  value="{{usuario.first_name}}" class="form-control" placeholder="Ej: Juan" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="firstname">Apellido<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="lastname" type="text" name="lastname"  value="{{usuario.last_name}}" class="form-control" placeholder="Ej: Perez" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="telefono_input">Telefono<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="telefono_input" type="text" name="telefono"  value="{{usuario.telefono}}" class="form-control" placeholder="Ej: 021-123456" required> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="telefono_2">Celular (Opcional)</label> </td>
+                        <td><input id="telefono_2" type="text" name="telefono_2"  value="{{usuario.telefono_2}}" class="form-control" placeholder="Ej: 0961-123456" value=""> </td>
+                    </tr>
+                        <tr>
+                        <td><label class="control-label" for="direccion_input" id="direccion_label">Direccion<i class="fa fa-asterisk required" id="icon_required"></i></label> </td>
+                        <td><input id="direccion_input" type="text" name="direccion"  value="{{usuario.direccion}}" class="form-control" placeholder="Ej: Mcal. Lopez esq España" required> </td>
+                    </tr>
+                    <tr>
+                        <td ><label class="control-label" for="email">Email</label> </td>
+                        <td><input id="correo" type="email" name="correo"  value="{{usuario.correo}}" class="form-control" placeholder="Ej: jperez@gmail.com"> </td>
+                    </tr>
+                    <tr>
+                        <td><label class="control-label" for="password">Password<i class="fa fa-asterisk required" id="icon_required"></i></label></td>
+                        <td><input id="password" type="password" name="password" value="{{usuario.password}}" class="form-control" required> </td>
+                    </tr>
+                        <tr>
+                            <td><label>Usuario activo</label></td>
+                            <td>
+                                {% if usuario.is_active %}
+                                <input  type="checkbox" name="activo" value="true" checked>
+                                {% else %}
+                                <input type="checkbox" name="activo" value="false">
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="table-responsive container col-md-6" >
+                    <table class="table table-hover">
+                        <thead>
+                        <tr class="text-info">
+                            <th  style="text-align: center;">Rol disponible</th>
+                            <th  style="text-align: center;">Asignar</th>
+                        </tr>
+                        </thead>
+                        <tbody  id="rows" name="list" multiple="multiple" >
+                        {% for item in grupos %}
+                        <tr value="{{ usuario.id }}">
+                            <td  class="datos" align="center" value="{{item.id}}">{{item.name}}</td>
+                            <td align="center">{% if item in roles %}
+                                <input type="checkbox"  checked name="agregar" value="{{item.id}}">
+                                {% else %}
+                                <input type="checkbox"  name="agregar" value="{{item.id}}"  >
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+        <div align="center">
+            <!-- perms.GestionUsuarios.modificar_usuario -->
+            {% if 1 == 1 %}<input type="submit" class="btn btn-primary"  name="Guardar" value="Guardar">{%endif%}
+            <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Cancelar">
+        </div>
+    </form>
+
+</div>
+<!--<script>
+    $('#form1 input[type=text]').on('change invalid', function() {
+    var textfield = $(this).get(0);
+    
+    // 'setCustomValidity not only sets the message, but also marks
+    // the field as invalid. In order to see whether the field really is
+    // invalid, we have to remove the message first
+    textfield.setCustomValidity('');
+    
+    if (!textfield.validity.valid) {
+      textfield.setCustomValidity('Por favor, complete este campo');  
+    }
+});
+</script>-->
+{% endblock %}

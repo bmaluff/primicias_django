@@ -1,0 +1,672 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+{% load staticfiles %}
+<script src="{% static "admin/plugins/autoNumeric/autoNumeric.js"%}"></script>
+<script src="{% static "admin/plugins/datepicker/bootstrap-datepicker.js"%}"></script>
+<link rel="stylesheet" href="{% static "admin/plugins/datatables/dataTables.bootstrap.css"%}">
+<script src="{% static "admin/plugins/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "admin/plugins/datatables/dataTables.bootstrap.min.js"%}"></script>
+{% endblock %}
+{% block contenido %}
+<style type="text/css" media="screen">
+select { width: 100px; margin-right: 20px; }
+    .required {
+        color: red;
+    }
+    .form-control {
+        width: 97%;
+        float: left;
+    }
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+    }
+</style>
+
+<div  style="text-align: center;" class="box-body no-padding">
+    <h2>Registro de Pedido</h2>
+    {% if error == 'vacio' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Complete los datos requeridos antes de guardar.
+    </div>
+    {%endif%}
+
+    <div align="center" class="col-md-12 col-centered">
+        <div id="error" style="text-align: center;"></div>
+
+
+    <div class="box box-solid">
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="input_cliente">Cliente</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" name="busqueda_cliente" id="input_cliente">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" class="btn btn-flat" id="button_cliente" data-toggle="modal" data-target="#buscar_personas">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <div id="results"></div>
+                </div>
+<form action="/crear_pedido/" method="post" id="crear_pedido_form">{% csrf_token %}
+            <div class="col-md-1" align="center">
+                <label>Factura?</label>
+
+                <input name="factura_input" type="checkbox" label="Factura" align="center">
+            </div>
+            <div class="col-md-1" align="center">
+                <label>Tercero?</label>
+
+                <input name="input_pago_tercero" type="checkbox" align="center" id="input_pago_tercero">
+            </div>
+            <div class="col-md-3 pagador" hidden>
+                    <label for="input_cliente">Pagador</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" name="busqueda_cliente" id="input_pagador">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" class="btn btn-flat" id="button_pagador" data-toggle="modal" data-target="#buscar_pagador">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <input type="text" name="id_pagador" id="input_id_pagador" hidden>
+                </div>
+            <div class="col-md-2">
+                <label>Tipo de Pago</label>
+                <select class="form-control" id="sel_pago" name="tipo_pago">
+                    {% for id_opc, nombre_opc in opc_pago %}
+                    <option value={{id_opc}}>{{nombre_opc}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2" hidden id='div_fecha_pago'>
+                    <label>Fecha de Pago:</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                      <input type="text" class="form-control pull-right" id="fecha_pago" name="fecha_pago">
+                    </div>
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label>Nombre:</label>
+                <input id="input_nombre" name="nombre" class="form-control" value="{{cliente.nombre}}" readonly>
+                <input id="input_id_cliente" name="id_cliente" value="{{cliente.id}}" hidden>
+            </div>
+            <div class="col-md-3 direccion_first">
+                <label>Direccion:</label>
+                <select class="form-control" id="direccion_pedido" name="direccion_pedido">
+                    {% for item in direccionesActuales %}
+                    <option>{{item}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Telefono:</label>
+                    <select class="form-control" id="telefono_pedido" name="telefono_pedido">
+                        <option>{{cliente.telefono}}</option>
+                         <!--if {#{cliente.direccion2}#}-->
+                        <option>{{cliente.telefono_2}}</option>
+                        <!-- endif -->
+                    </select>
+            </div>
+        </div>
+        <div class="input_comidas_wrap" onchange="calcular()">
+          <div class="innerWrapper">
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Fecha:</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                      <input type="text" class="form-control pull-right fecha" id="fecha_pedido_first" name="lista_fecha[]">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label for="add_button">Comida:</label>
+
+
+            <!--<div class="input-group">-->
+                    <select class="form-control comidas" id="first_select_comidas" name="lista_comida[]">
+                    {% for id_comida, nom_comida in opc_comida %}
+                        <option value={{id_comida}}>{{nom_comida}}</option>
+                    {% endfor%}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label>Cant</label>
+                    <input class="form-control cantidad_comida" type="number" value=1 onchange="calcular()" name="cantidad_comida[]">
+                </div>
+                <div class="col-md-3">
+                    <label for="add_button">Postre:</label>
+                    <select class="form-control postres" id="first_select_postres" name="lista_postre[]">
+                    {% for postre in opc_postre %}
+                        <option value={{postre.id}}>{{postre.nombre}}</option>
+                    {% endfor%}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label>Cant</label>
+                    <input class="form-control cantidad_postre" type="number" value=1 onchange="calcular()" name="cantidad_postre[]">
+                </div>
+
+                <div class="col-md-2" style="margin-top: 2.5%">
+                    <button class="btn btn-flat add_comidas_button pull-right" onClick="melasuda()"><i class="fa fa-plus"></i></button>
+
+                </div>
+                <div class="col-md-3">
+                    <label>Direccion:</label>
+                    <select class="form-control direcciones" id="" name="direccion[]">
+                        {% for item in direccionesActuales %}
+                        <option>{{item}}</option>
+                        {% endfor %}
+                        <!--<option>{{cliente.direccion}}</option>
+                         if {#{cliente.direccion2}#}
+                        <option>{{cliente.direccion2}}</option>-->
+                        <!-- endif -->
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Telefono:</label>
+                    <select class="form-control telefonos" id="sel_telefono" name="telefono[]">
+                        <option>{{cliente.telefono}}</option>
+                         <!--if {#{cliente.direccion2}#}-->
+                        <option>{{cliente.telefono_2}}</option>
+                        <!-- endif -->
+                    </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Costo:</label>
+                <input class="form-control" name="costo_total" id="costo_input" value=19000 data-a-dec="," data-a-sep="." data-a-pad="false" type="text" readonly>
+            </div>
+        </div>
+        </div>
+    </div>
+
+            </div>
+</div>
+
+<div align="center">
+    <!-- Aqui va la condicional el if de los permisos para guardar--><input type="button" class="btn btn-primary"  name="Guardar" value="Guardar" id="submit_guardar">
+    <input type="reset" class="btn btn-info" value="Reestablecer Datos">
+    <a href="/listar_comidas/" class="btn btn-info" name="Cancelar" value="Cancelar">Cancelar</a>
+</div>
+</form>
+<div class="modal fade" id="buscar_personas" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Clientes
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel box box-primary">
+					<div class="box-body">
+            <form action="/crear_pedido/" method="post" id="updateClienteForm">{% csrf_token %}
+
+
+                                {% include 'Gestion_de_pedidos/actualizar_clientes.html' %}
+                    </div>
+
+                          <button type="submit" id=button_modal_2 name="eleccion" class="btn btn-primary pull-right">Elegir
+                          </button>
+              </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="buscar_pagador" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Clientes
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel box box-primary">
+					<div class="box-body">
+						<div class="table-responsive">
+							<table class="table table-striped table-bordered table-hover"  id="tabla_pagadores">
+                                {% include 'Gestion_de_pedidos/actualizar_clientes.html' %}
+                            </table>
+                        </div>
+                        <button id=button_modal_pagador name="eleccion_pagador" class="btn btn-primary pull-right"  data-dismiss="modal">Elegir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#crear_comida_form").validate({
+        rules: {
+            nombre: "required",
+            direccion_pedido: "required",
+            telefono_pedido: "required",
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        jQuery(function($) {
+      	$('#costo_input').autoNumeric('init');
+        });
+            $('#button_agregar_pedido').on('click', function(){
+            location.reload(true);
+        });
+        $('#button_cancelar_pedido').click(function(){
+            location.reload();
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+    var max_fields      = 10; //maximum input boxes allowed
+    var wrapper         = $(".innerWrapper"); //Fields wrapper
+    var add_button      = $(".add_comidas_button"); //Add button ID
+    var x = 1; //initlal text box count
+    $(add_button).click(function(e){ //on add input button click
+        e.preventDefault();
+        if(x < max_fields){ //max input box allowed
+            x++; //text box increment
+            //$(wrapper).append('<div class="row"><div class="col-md-3"><label>Fecha:</label><div class="input-group"><div class="input-group-addon"><i class="fa fa-calendar"></i></div><input type="text" class="form-control pull-right fecha" name="lista_fecha[]"></div></div><div class="col-md-2"><label for="add_button">Comida:</label><select class="form-control comidas" name="lista_comida[]">{% for id_comida, nom_comida in opc_comida %}<option value={{id_comida}}>{{nom_comida}}</option>{% endfor%}</select></div><div class="col-md-1"><label>Cant</label><input class="form-control cantidad_comida" type="number" value=1 onchange="calcular()" name="cantidad_comida[]"></div><div class="col-md-3"><label for="add_button">Postre:</label><select class="form-control postres" name="lista_postre[]">{% for postre in opc_postre %}<option value={{postre.id}}>{{postre.nombre}}</option>{% endfor%}</select></div><div class="col-md-1"><label>Cant</label><input class="form-control cantidad_postre" type="number" value=1 onchange="calcular()" name="cantidad_postre[]"></div><div class="col-md-2" style="margin-top: 2.5%"><button class="btn btn-flat remove_field pull-right"><i class="fa fa-trash"></i></button></div><div class="col-md-3"><label>Direccion:</label><select class="form-control direcciones" name="direccion[]"><option>{{cliente.direccion}}</option><option>{{cliente.direccion2}}</option></select></div><div class="col-md-3"><label>Telefono:</label><select class="form-control telefonos" name="telefono[]"><option>{{cliente.telefono}}</option><option>{{cliente.telefono_2}}</option></select></div></div>');//add select
+            $(wrapper).clone().appendTo(".input_comidas_wrap")
+            calcular();
+            /*var valor;
+            $('#costo_input').val(function(i,oldval) {
+                cadena = $('#costo_input').autoNumeric('get');
+                valor = parseInt(cadena);
+                return valor+=15000;
+            });
+            $('#costo_input').autoNumeric('set', valor);*/
+        }
+    });
+
+    $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+        e.preventDefault(); $(this).parent('div').parent('div').remove(); x--; calcular();
+        /*$('#costo_input').val(function(i,oldval) {
+                cadena = $('#costo_input').autoNumeric('get');
+                valor = parseInt(cadena);
+                return valor-=15000;
+            });
+        $('#costo_input').autoNumeric('set', valor);*/
+    })
+
+    $(wrapper).on("focus",".fecha", function(e){ //user click on remove text
+        e.preventDefault();
+        var fecha       = $(".fecha");
+        $(fecha).datepicker({format: 'dd/mm/yyyy', todayHighlight: true});
+    })
+    $('#costo_input').change(function () {
+            $('#costo_input').autoNumeric('init');
+    })
+    $('#sel_pago').change(function(){
+        if($(this).val() == 'S'){
+            $('#div_fecha_pago').show();
+            $('#fecha_pago').datepicker({format: 'dd/mm/yyyy', todayHighlight: true});
+        }else{
+            $('#div_fecha_pago').hide();
+            $('#fecha_pago').val('');
+        }
+    })
+});
+</script>
+<script>
+    function calcular(){
+        var total_comida = 0;
+        var total_postre = 0;
+        var cantidad_comida = $('.cantidad_comida').each(function (index, element){
+            total_comida = total_comida + parseInt($(element).val());
+        });
+        var cantidad_postre = $('.cantidad_postre').each(function (index, element){
+            total_postre = total_postre + parseInt($(element).val());
+        });
+        //console.log(cantidad.length);
+        //console.log(total_comida + total_postre);
+        $('#costo_input').autoNumeric('set',(total_comida*15000)+(total_postre*4000));
+    }
+</script>
+<script>
+    $('#button_cliente').click(function(event){
+        event.preventDefault();
+        actualizarCliente();
+    });
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function actualizarCliente() {
+        //console.log("Empezando a actualizar!"); // sanity check
+        //console.log($('#input_cliente').val());
+        $.ajaxSetup({headers: { "X-CSRFToken": $('input[name=csrfmiddlewaretoken]').val() }});
+        $.ajax({
+            url : "/cliente_search/",
+            type : "POST",
+            data : {
+                'sugerencia' : $('#input_cliente').val()
+            },
+            success : function(html) {
+                $('#input_cliente').val('');
+                $('#tabla_clientes').html(html);
+                /*$('#tabla_clientes').DataTable({
+                    "paging": true,
+                    "lengthChange": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": false,
+                    "autoWidth": true
+                });*/
+                //console.log(html);
+                //console.log('vamos bien');
+            },
+            error : function(){
+                $('#error').html('<div class="alert alert-danger alert-dismissible " role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Error!</strong> Seleccione un usuario!</div>');
+            }
+        });
+    };
+    function getCookiec(c_name)
+    {
+        if (document.cookie.length > 0)
+        {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1)
+            {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start,c_end));
+            }
+        }
+        return "";
+     }
+    $('#button_modal').click(function(event){
+       event.preventDefault();
+        var seleccionado = $('input:radio[name=radio_cliente]:checked').val();
+        completar_cliente(seleccionado);
+    });
+    function completar_cliente(id_cliente){
+        $('tr.item').each(function(){
+            este = $(this)
+            if (este.context.id == id_cliente){
+                //console.log(este.context.id);
+                //console.log(este.context.children[3].innerText);
+                option_direccion_1 = $('<option></option>').text(este.context.children[3].innerText);
+                option_direccion_2 = $('<option></option>').text(este.context.children[4].innerText);
+                option_telefono_1 = $('<option></option>').text(este.context.children[5].innerText);
+                option_telefono_2 = $('<option></option>').text(este.context.children[6].innerText);
+                var nombre_cliente = este.context.children[1].innerText;
+                $('select.direcciones').empty();
+
+                $('select.direcciones').append(option_direccion_1);
+
+                if(option_direccion_2[0].innerText.length > 1){
+                    $('select.direcciones').append(option_direccion_2);
+
+                }
+                $('select.telefonos').empty();
+
+                $('select.telefonos').append(option_telefono_1);
+
+                if(option_telefono_2[0].innerText.length > 1){
+                    $('select.telefonos').append(option_telefono_2);
+
+                }
+                $('#input_nombre').val(nombre_cliente);
+
+                $('#input_id_cliente').val(id_cliente);
+            }
+        });
+        $('#direccion_pedido').empty();
+        $('#direccion_pedido').append(option_direccion_1.clone());
+        if(option_direccion_2[0].innerText.length > 1) $('#direccion_pedido').append(option_direccion_2.clone());
+        $('#telefono_pedido').empty();
+        $('#telefono_pedido').append(option_telefono_1.clone());
+        if(option_telefono_2[0].innerText.length > 1) $('#telefono_pedido').append(option_telefono_2.clone());
+    };
+    $('#button_pagador').click(function(event){
+        event.preventDefault();
+        actualizarPagador();
+    });
+    function actualizarPagador() {
+        //console.log("Empezando a actualizar!"); // sanity check
+        //console.log($('#input_cliente').val());
+        $.ajaxSetup({headers: { "X-CSRFToken": $('input[name=csrfmiddlewaretoken]').val() }});
+        $.ajax({
+            url : "/cliente_search/",
+            type : "POST",
+            data : {
+                'sugerencia' : $('#input_pagador').val()
+            },
+            success : function(html) {
+                $('#input_pagador').val('');
+                $('#tabla_pagadores').html(html);
+                /*$('#tabla_clientes').DataTable({
+                    "paging": true,
+                    "lengthChange": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": false,
+                    "autoWidth": true
+                });*/
+                //console.log(html);
+                //console.log('vamos bien');
+            },
+            error : function(){
+                $('#error').html('<div class="alert alert-danger alert-dismissible " role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Error!</strong> Seleccione un usuario!</div>');
+            }
+        });
+    };
+    $('#input_pago_tercero').click(function() {
+        var checkbox = $(this);
+        if (checkbox.is(':checked')) {
+            $('div.pagador').show();
+        }else{
+            $('div.pagador').hide();
+        }
+    });
+    $('#button_modal_pagador').click(function(event){
+       event.preventDefault();
+        var seleccionado = $('input:radio[name=radio_cliente]:checked').val();
+        completar_pagador(seleccionado);
+    });
+    function completar_pagador(id_cliente){
+            var este = 'hola';
+            var direcciones = [];
+            var telefonos = [];
+            $('.actualizable').each(function(){
+              if($( this ).attr('name') == id_cliente){
+                direcciones.push($(this));
+              }
+            })
+            $('#direccion_pedido')
+            .find('option')
+            .remove().end()
+            for(i=0;i<direcciones.length;i++){
+              $('#direccion_pedido')
+              .append(direcciones[i])
+            }
+            var telefono1 = $('.telefono_cliente').html()
+            var telefono2 = $('.telefono_2_cliente').html()
+            telefonos.push(telefono1)
+            telefonos.push(telefono2)
+            $('#telefono_pedido').empty();
+            for(i=0;i<telefonos.length;i++){
+              if(telefonos[i] != "")
+                $('#telefono_pedido').append($('<option></option>').text(telefonos[i]));
+            }
+
+
+            /*if (este.context.id == id_cliente){
+                //console.log(este.context.id);
+                //console.log(este.context.children[3].innerText);
+                /*var pagador = este.context.children[1].innerText;
+                var option_direccion_1 = $('<option></option>').text(este.context.children[3].innerText);
+                var option_direccion_2 = $('<option></option>').text(este.context.children[4].innerText);
+                var option_telefono_1 = $('<option></option>').text(este.context.children[5].innerText);
+                var option_telefono_2 = $('<option></option>').text(este.context.children[6].innerText);
+                $('#input_pagador').val(pagador);
+                $('#input_id_pagador').val(id_cliente);
+                $('#direccion_pedido').empty();
+                $('#direccion_pedido').append(option_direccion_1);
+                if(option_direccion_2[0].innerText.length > 1) $('#direccion_pedido').append(option_direccion_2);
+                $('#telefono_pedido').empty();
+                $('#telefono_pedido').append(option_telefono_1);
+                if(option_telefono_2[0].innerText.length > 1) $('#telefono_pedido').append(option_telefono_2);
+
+            }*/
+    };
+    /*$('#submit_guardar').click(function(event){
+        event.preventDefault();
+        guardarForm();
+    });
+    function guardarForm(){
+        $.ajaxSetup({headers: { "X-CSRFToken": getCookie("csrftoken") }});
+        $.post('crear_pedido', $('#crear_pedido_form').serialize());
+    }*/
+    $('#submit_guardar').click(function(event){
+        event.preventDefault();
+        guardarForm();
+    });
+    function guardarForm() {
+        var total_postre = '';
+        var formulario = $('#crear_pedido_form').serialize();
+        var csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+        var direcciones = [];
+        $('select.direcciones').each(function(){
+            direcciones.push($(this).val());
+        });
+        var telefonos = [];
+        $('select.telefonos').each(function(){
+            telefonos.push($(this).val());
+        });
+        var comidas = [];
+        $('select.comidas').each(function(){
+            comidas.push($(this).val());
+        });
+        var postres = [];
+        $('select.postres').each(function(){
+            postres.push($(this).val());
+        });
+        var cantidad_comida = [];
+        $('input.cantidad_comida').each(function(){
+            cantidad_comida.push($(this).val());
+        });
+        var cantidad_postre = [];
+        $('.cantidad_postre').each(function(){
+            cantidad_postre.push($(this).val());
+        });
+        var fechas = [];
+        $('input.fecha').each(function(){
+            fechas.push($(this).val());
+        });
+        var guardar = $('#submit_guardar').val();
+        var formu = $('#crear_pedido_form');
+        var datos = getFormData(formu);
+        /*console.log('Formulario:');
+        console.log(datos);
+
+        //console.log("Empezando a actualizar!"); // sanity check
+        //console.log($('#input_cliente').val());
+        console.log(formulario);
+        console.log(comidas);
+        console.log('Direcciones: ' + direcciones);
+        console.log(cantidad_comida);
+        //console.log(cant_postre);
+        console.log($('.cantidad_postre').serialize());
+        console.log(fechas);*/
+        $.ajaxSetup({headers: { "X-CSRFToken": $('input[name=csrfmiddlewaretoken]').val() }});
+        $.ajax({
+            url : "/crear_pedido/",
+            type : "POST",
+            data : {
+                'direcciones' : direcciones,
+                'telefonos' : telefonos,
+                'comidas' : comidas,
+                'postres' : postres,
+                'cantidad_comida' : cantidad_comida,
+                'cantidad_postre' : cantidad_postre,
+                'fechas' : fechas,
+                'Guardar' : guardar,
+                'datos' : datos
+            },
+            success : function(html) {
+                $('#error').html('<div class="alert  alert-success alert-dismissible " role="alert">\
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+        <strong>Pedido creado de forma exitosa.</strong><br><button id="button_agregar_pedido" type="button" class="btn btn-primary" onClick="location.reload(true);">Agregar Pedido</button>\
+        <button id="button_cancelar_pedido" type="button" class="btn btn-default" onClick="listar_pedidos();">\
+            Cancelar\
+        </button>\
+    </div>');
+                $('#error').css({'top': 200, 'margin': 'auto', 'width': '90%',  'position': 'relative', 'z-index': 999});
+                console.log('success');
+
+                //$('#error').html(html);
+                /*$('#input_pagador').val('');
+                $('#tabla_pagadores').html(html);
+                $('#tabla_clientes').DataTable({
+                    "paging": true,
+                    "lengthChange": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": false,
+                    "autoWidth": true
+                });*/
+                //console.log(html);
+                //console.log('vamos bien');
+            },
+            error : function(xhr,status){
+                $('#error').html(xhr.responseText);
+            }
+        });
+    };
+
+    function getFormData($form){
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
+
+    $.map(unindexed_array, function(n, i){
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
+    }
+</script>
+<script>
+    function listar_pedidos(){
+    window.location.replace("http://localhost:8000/listar_pedidos")
+    }
+</script>
+{% endblock %}

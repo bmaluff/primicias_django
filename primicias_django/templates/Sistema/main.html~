@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head lang="es">
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static "admin/bootstrap/css/bootstrap.min.css"%}">
+    <!--<link rel="stylesheet" href="{% static "admin/css/base.css"%}">-->
+    <link rel="stylesheet" href="{% static "admin/plugins/font-awesome/css/font-awesome.min.css" %}">
+    <!--en produccion comentar el vinculo de abajo y descomentar el de arriba
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="{% static "admin/plugins/ionicons/css/ionicons.min.css"%}">
+    <link rel="stylesheet" href="{% static "admin/plugins/datepicker/datepicker3.css"%}">
+    <link rel="stylesheet" href="{% static "admin/dist/css/AdminLTE.min.css"%}">
+    <link rel="stylesheet" href="{% static "admin/dist/css/skins/_all-skins.min.css"%}">
+    <link rel="stylesheet" href="{% static "admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css"%}">
+    <script src="{% static "admin/plugins/jQuery/jQuery-2.1.4.min.js"%}"></script>
+    <script src="{% static "admin/plugins/jquery-validation/dist/jquery.validate.js"%}"></script>
+    <script src="{% static "admin/plugins/jquery-validation/src/localization/messages_es.js"%}"></script>
+    <script src="{% static "admin/bootstrap/js/bootstrap.min.js"%}"></script>
+    <script src="{% static "admin/dist/js/app.min.js"%}"></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="/main/" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><b>Nahir</b></span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>Primicias</b>|Nahir</span>
+            </a>
+                    <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
+          <!-- ##############################Navbar Right Menu#########################################33 -->
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <!-- Messages: style can be found in dropdown.less
+              <li class="dropdown messages-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="label label-success">!</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">Proximamente</li>
+                  
+                  <li class="footer"><a href="#">See All Messages</a></li>
+                </ul>
+              </li>-->
+              <!-- Notifications: style can be found in dropdown.less 
+              <li class="dropdown notifications-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bell-o"></i>
+                  <span class="label label-warning">!</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">Proximamente</li>
+                  <li>
+                     inner menu: contains the actual data
+                    <ul class="menu">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i>  5 new members joined today
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the page and may cause design problems
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-red"></i> 5 new members joined
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-shopping-cart text-green"></i> 25 sales made
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-user text-red"></i> You changed your username
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="#">View all</a></li>
+                </ul>
+              </li>-->
+              <!-- Tasks: style can be found in dropdown.less 
+              <li class="dropdown tasks-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-flag-o"></i>
+                  <span class="label label-danger">!</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">Proximamente</li>
+                  <li class="footer">
+                    <a href="#">View all tasks</a>
+                  </li>
+                </ul>
+              </li>-->
+              <!-- User Account: style can be found in dropdown.less -->
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <img src={% static "imagenes/avatar_2x.png"%} class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ usuario_sesion.first_name }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <!-- User image -->
+                  <li class="user-header">
+                    <img src={% static "imagenes/avatar_2x.png"%} class="img-circle" alt="User Image">
+                    <p>
+                      {{ usuario_sesion.username }}
+                      {% for grupo in usuario_sesion.groups.all %}
+                      	<small>{{ grupo }}</small>
+                      {% endfor %}
+                    </p>
+                  </li>
+                  <!-- Menu Body -->
+                  <!--<li class="user-body">
+                    <div class="col-xs-4 text-center">
+                      <a href="#">Followers</a>
+                    </div>
+                    <div class="col-xs-4 text-center">
+                      <a href="#">Sales</a>
+                    </div>
+                    <div class="col-xs-4 text-center">
+                      <a href="#">Friends</a>
+                    </div>
+                  </li>-->
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-left">
+                      <a href="{% url 'modificar_usuario' usuario_sesion.id %}" class="btn btn-default btn-flat">Perfil</a>
+                    </div>
+                    <div class="pull-left" style="padding-left: 5%!important;">
+                      <a href="{% url 'cambiar_password' %}" class="btn btn-default btn-flat">Cambiar Pass</a>
+                    </div>
+                    <div class="pull-right">
+                      <a href="/logout/" class="btn btn-default btn-flat">Salir</a>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <!-- Control Sidebar Toggle Button 
+              <li>
+                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+              </li>-->
+            </ul>
+          </div>
+        </nav>
+        </header>
+        <div class="content-wrapper">
+            <section class="content-header">
+                {% block header %}
+
+                {% endblock %}
+
+              <!--<ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+              </ol>-->
+            </section>
+            <!-- Aqui va el contenido  -->
+            <!--<section class="content">-->
+                {% block contenido %}
+                {% endblock%}
+            <!--</section>--><!-- /.content -->
+        </div>
+        <footer class="main-footer">
+        <!-- To the right -->
+            <div class="pull-right hidden-xs">
+                {% block footer %}
+                    BM2Pie
+                {% endblock %}
+            </div>
+            <!-- Default to the left -->
+            <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+        </footer>
+<!--########################   RIGHT SIDE BAR   ##############################-->
+        <aside class="main-sidebar">
+
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+
+              <!-- Sidebar user panel (optional) -->
+              <div class="user-panel">
+                <div class="pull-left image">
+                  <img src={% static "imagenes/avatar_2x.png"%} class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                  <p>{{usuario_sesion.first_name}} {{usuario_sesion.last_name}}</p>
+                  <!-- Status 
+                  <a href="#"><i class="fa fa-circle text-success"></i> Online</a>-->
+                </div>
+              </div>
+
+              <!-- search form (Optional) 
+              <form action="#" method="get" class="sidebar-form">
+                <div class="input-group">
+                  <input type="text" name="q" class="form-control" placeholder="Search...">
+                  <span class="input-group-btn">
+                    <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+                  </span>
+                </div>
+              </form>-->
+              <!-- /.search form -->
+
+              <!-- Sidebar Menu -->
+              <ul class="sidebar-menu">
+                <li class="header">MENU PRINCIPAL</li>
+                <!-- Optionally, you can add icons to the links -->
+                <li><a href="/main/"><i class="fa fa-home"></i> <span>Inicio</span></a>
+                </li>
+                {% if perms.GestionUsuarios.gestion_usuario  %}
+                <li class="treeview"><a href="#"><i class="fa fa-smile-o"></i> <span>Gestion de Usuarios</span><i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                    {% if perms.GestionUsuarios.crear_usuario  %}
+                    <li><a href="/crear_usuario/">Crear Usuario</a></li>
+                    {% endif %}
+                    {% if perms.GestionUsuarios.listar_usuario  %}
+                    <li><a href="/listar_usuarios/">Listar Usuarios</a></li>
+                    {% endif %}
+                  </ul>
+                  </li>
+                {% endif %}
+                {% if perms.GestionRolesyPermisos.gestion_rol %}
+                <li class="treeview"><a href="#"><i class="fa fa-key"></i> <span>Gestion de Roles</span><i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                    {% if perms.GestionRolesyPermisos.crear_rol %}
+                    <li><a href="/crear_rol/">Crear Rol</a></li>
+                    {% endif %}
+                    {% if perms.GestionRolesyPermisos.listar_rol %}
+                    <li><a href="/listar_roles/">Listar Roles</a></li>
+                    {% endif %}
+                  </ul>
+                  </li>
+                {% endif %}
+                {% if perms.GestionClientes.gestion_cliente  %}
+                <li class="treeview"><a href="#"><i class="fa fa-group"></i> <span>Gestion de Clientes</span><i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                    {% if perms.GestionClientes.crear_cliente  %}
+                    <li><a href="/crear_cliente/">Nuevo Cliente</a></li>
+                    {% endif %}
+                    {% if perms.GestionClientes.listar_cliente  %}
+                    <li><a href="/listar_clientes/">Listar Clientes</a></li>
+                    {% endif %}
+                  </ul>
+                  </li>
+                {% endif %}
+                {% if perms.GestionPlatos.gestion_comidas  %}
+                <li class="treeview">
+                  <a href="#"><i class="fa fa-cutlery"></i> <span>Gestion de Platos</span> <i class="fa fa-angle-left pull-right"></i></a>
+                  <ul class="treeview-menu">
+                    {% if perms.GestionPlatos.crear_comida  %}
+                    <li><a href="/crear_comida/">Crear Comida</a></li>
+                    {% endif %}
+                    {% if perms.GestionPlatos.crear_postre  %}
+                    <li><a href="/listar_comidas/">Listar Comidas</a></li>
+                    <li><a href="/crear_postre/">Crear Postre</a></li>
+                    {% endif %}
+                    {% if perms.GestionPlatos.listar_postres  %}
+                    <li><a href="/listar_postres/">Listar Postres</a></li>
+                    {% endif %}
+                  </ul>
+                </li>
+                {% endif %}
+                {% if perms.GestionMenu.gestion_menu  %}
+                <li class="treeview">
+                  <a href="#"><i class="fa fa-cutlery"></i> <span>Gestion del Men&uacute;</span> <i class="fa fa-angle-left pull-right"></i></a>
+                  <ul class="treeview-menu">
+                    <li><a href="/crear_menu/">Crear Menu</a></li>
+                    <li><a href="/listar_menu/">Listar Comidas</a></li>
+                  </ul>
+                </li>
+                {% endif %}
+                {% if perms.GestionPedidos.gestion_pedido  %}
+                <li class="treeview">
+                  <a href="#"><i class="fa fa-cutlery"></i> <span>Gestion de Pedidos</span> <i class="fa fa-angle-left pull-right"></i></a>
+                  <ul class="treeview-menu">
+                    <li><a href="/crear_pedido/">Crear Pedido</a></li>
+                    <li><a href="/listar_pedidos/">Listar Pedidos</a></li>
+                  </ul>
+                </li>
+                {% endif %}
+                {% if perms.GestionDelivery.gestion_zona  %}
+                <li class="treeview">
+                  <a href="#"><i class="fa fa-cutlery"></i> <span>Gestion de Delivery</span> <i class="fa fa-angle-left pull-right"></i></a>
+                  <ul class="treeview-menu">
+                    <li><a href="/crear_zona/">Nueva Zona</a></li>
+                    <li><a href="/listar_zonas/">Listar Zonas</a></li>
+                    <li><a href="/imprimir_recorrido/">Imprimir Recorrido</a></li>
+                  </ul>
+                </li>
+                {% endif %}
+              </ul><!-- /.sidebar-menu -->
+            </section>
+        <!-- /.sidebar -->
+      </aside>
+        <!-- The Right Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+              <!-- Create the tabs  -->
+                <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                  <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                  <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+                </ul>
+                <div class="tab-content">
+                  <!-- Home tab content
+                  <div class="tab-pane active" id="control-sidebar-home-tab">
+                    <h3 class="control-sidebar-heading">Recent Activity</h3>
+                    <ul class="control-sidebar-menu">
+                      <li>
+                        <a href="javascript::;">
+                          <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                          <div class="menu-info">
+                            <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+                            <p>Will be 23 on April 24th</p>
+                          </div>
+                        </a>
+                      </li>
+                    </ul> --><!-- /.control-sidebar-menu -->
+                  </div>
+                </div>
+        </aside>
+        <!-- The sidebar's background -->
+        <!-- This div must placed right after the sidebar for it to work-->
+        <div class="control-sidebar-bg"></div>
+    </div><!-- ./wrapper -->
+    {% load staticfiles %}
+    <!-- jQuery 2.1.4
+    <script src="{% static "admin/plugins/jQuery/jQuery-2.1.4.min.js"%}"></script> -->
+    <!-- Bootstrap 3.3.5
+    <script src="{% static "admin/bootstrap/js/bootstrap.min.js"%}"></script> -->
+    <!-- FastClick -->
+    <script src="{% static "admin/plugins/fastclick/fastclick.min.js"%}"></script>
+    <!-- AdminLTE App
+    <script src="{% static "admin/dist/js/app.min.js"%}"></script>-->
+    <!-- Sparkline -->
+    <script src="{% static "admin/plugins/sparkline/jquery.sparkline.min.js"%}"></script>
+    <!-- jvectormap -->
+    <script src="{% static "admin/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"%}"></script>
+    <script src="{% static "admin/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"%}"></script>
+    <!-- SlimScroll 1.3.0 -->
+    <script src="{% static "admin/plugins/slimScroll/jquery.slimscroll.min.js"%}"></script>
+    <!-- ChartJS 1.0.1 -->
+    <script src="{% static "admin/plugins/chartjs/Chart.min.js"%}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes)
+    <script src="{% static "admin/dist/js/pages/dashboard2.js"%}"></script>-->
+    <!-- AdminLTE for demo purposes -->
+    <script src="{% static "admin/dist/js/demo.js"%}"></script>
+  </body>
+</html>

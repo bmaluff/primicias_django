@@ -1,0 +1,142 @@
+{% extends 'Sistema/main.html' %}
+{% block header %}
+{% load staticfiles %}
+<script src="{% static "admin/plugins/datepicker/bootstrap-datepicker.js"%}"></script>
+{% endblock %}
+{% block contenido %}
+<style type="text/css" media="screen">
+select { width: 100px; margin-right: 20px; }
+    .required {
+        color: red;
+    }
+    .form-control {
+        width: 97%;
+        float: left;
+    }
+    .col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+    }
+    .table {
+    }
+</style>
+
+<div  style="text-align: center;" class="box-body no-padding">
+    <h2>Impresion de Recorrido</h2>
+    {% if error == 'vacio' %}
+    <div class="alert alert-danger alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> Complete los datos requeridos antes de guardar.
+    </div>
+    {%endif%}
+
+    {% if error == 'ninguno' %}
+    <div class="alert  alert-success alert-dismissible " role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Cliente creado de forma exitosa.</strong> .
+    </div>
+    {%endif%}
+    <div align="center" class="col-md-5 col-centered">
+        <div class="box box-solid">
+    
+    <form action="" method="post" style="text-align:left;" id="imprimir_recorrido_form">{% csrf_token %}
+        
+
+                <table class="table table-hover table-responsive">
+                    <thead>
+                    <tr class="text-info">
+                        <th style="text-align: center;" colspan="2">Par&aacute;metros de Impresi&oacute;n</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rows" >
+                    <tr>
+                        <td >
+                            <label>Fecha</label>
+                        </td>
+                        <td>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                  <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                  </div>
+                                  <input type="text" class="form-control fecha" id="fecha_pedido" name="fecha">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="control-label" for="nombre">Zona</label>
+                        </td>
+                        <td>
+                            <div class="col-md-6">
+                                <select class="form-control" id="sel_zona" name="zona">
+                        {% for elemento in zonas %}
+                        <option value={{elemento.id}}>{{elemento.nombre}}</option>
+                        {% endfor %}
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Cambiar de Encargado</label>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="cambiar_repartidor" id="check_repartidor" onchange="repartidor_checked()">
+                        </td>
+                    </tr>
+                        <tr hidden id="tr_repartidor">
+                        <td>
+                            <label class="control-label" for="encargado">Delivery</label> 
+                            </td>
+                        <td>
+                            <div class="col-md-6">
+                                <select class="form-control" id="sel_encargado" name="encargado">
+                        {% for elemento in repartidores %}
+                        <option value={{elemento.id}}>{{elemento.first_name}} {{elemento.last_name}}</option>
+                        {% endfor %}
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>    
+</div>
+
+
+
+<div align="center">
+    <!-- Aqui va la condicional el if de los permisos para guardar--><input type="submit" class="btn btn-primary"  name="Imprimir" value="Imprimir">
+    <input type="reset" class="btn btn-info" value="Reestablecer Datos">
+    <input type="button" class="btn btn-info" onclick="window.history.back()" name="Volver" value="Cancelar">
+</div>
+
+</form>
+<script>
+    $(document).ready(function () {
+        $('.fecha').datepicker({format: 'dd/mm/yyyy', todayHighlight: true});
+    });
+    function repartidor_checked(){
+        if($('#check_repartidor').is(":checked"))
+            $('#tr_repartidor').show()
+        else
+            $('#tr_repartidor').hide()
+    }
+</script>
+<script>
+    $("#imprimir_recorrido_form").validate({
+        rules: {
+            fecha: "required",
+            nombre: "required",
+            encargado: "required",
+        }
+    });
+</script>
+{% endblock %}
